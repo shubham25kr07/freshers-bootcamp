@@ -10,11 +10,11 @@ type Matrix struct {
 	Grid        [][]int
 }
 
-func (m *Matrix) getRow() int {
-	return m.row
+func (m1 *Matrix) getRow() int {
+	return m1.row
 }
-func (m *Matrix) getColumn() int {
-	return m.column
+func (m1 *Matrix) getColumn() int {
+	return m1.column
 }
 func (m *Matrix) setElemet(i, j, val int) {
 	if i < 0 || i >= m.getRow() {

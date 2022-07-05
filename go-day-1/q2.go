@@ -44,7 +44,6 @@ func main() {
 	//                  *    ^
 	//                / \   / \
 	//               d  e  f  g
-	//         a + ((d*e * f^g)-c)
 
 	root := makeNode("+")
 	root.left = makeNode("a")
