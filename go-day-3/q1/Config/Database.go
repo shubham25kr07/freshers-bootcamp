@@ -18,7 +18,7 @@ type DataBaseConfig struct {
 func BuildConfig() *DataBaseConfig {
 	dbConfig := DataBaseConfig{
 		User:     "root",
-		Password: "SHub@#5678",
+		Password: "***",
 		DbName:   "day3_q1",
 	}
 	return &dbConfig
