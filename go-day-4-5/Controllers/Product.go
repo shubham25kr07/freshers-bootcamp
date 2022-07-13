@@ -7,7 +7,6 @@ import (
 	"go-day-4-5/Redis"
 	"go-day-4-5/Service"
 	"net/http"
-	"time"
 )
 
 func ModifyProductResponse(product *Models.Product) Models.ProductResponse {
@@ -79,11 +78,9 @@ func UpdateProductDetail(c *gin.Context) {
 
 	uniqueValue := "Locked"
 	LockDuration := 6000
-	//messages := make(chan bool)
-	if isLocked, _ := Redis.Lock(id, uniqueValue, LockDuration); !isLocked {
-		time.Sleep(6000 * time.Millisecond)
-	}
-	defer Redis.Unlock(id, uniqueValue)
+	messages := make(chan int, 1)
+	Redis.Lock(id, uniqueValue, LockDuration, messages)
+	defer Redis.Unlock(id, uniqueValue, messages)
 
 	err = Service.UpdateProduct(&product)
 	if err != nil {

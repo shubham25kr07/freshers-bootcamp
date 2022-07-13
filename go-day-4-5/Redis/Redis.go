@@ -30,19 +30,20 @@ const (
 	`
 )
 
-func Lock(key, value string, timeoutMs int) (bool, error) {
+func Lock(key, value string, timeoutMs int, c chan<- int) error {
 	r := Config.Pool.Get()
 	defer r.Close()
 
 	cmd := redis.NewScript(1, lockScript)
-	if res, err := cmd.Do(r, key, value, timeoutMs); err != nil {
-		return false, err
+	if _, err := cmd.Do(r, key, value, timeoutMs); err != nil {
+		return err
 	} else {
-		return res == "OK", nil
+		c <- 1
+		return nil
 	}
 }
 
-func Unlock(key, value string) error {
+func Unlock(key, value string, c <-chan int) error {
 	r := Config.Pool.Get()
 	defer r.Close()
 
@@ -52,5 +53,6 @@ func Unlock(key, value string) error {
 	} else if res != 1 {
 		return errors.New("Unlock failed, key or secret incorrect")
 	}
+	<-c
 	return nil
 }

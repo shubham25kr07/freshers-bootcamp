@@ -5,7 +5,6 @@ import (
 	"go-day-4-5/Models"
 	"go-day-4-5/Redis"
 	"strconv"
-	"time"
 )
 
 func PlaceOrder(order *Models.Order) (err error) {
@@ -14,11 +13,10 @@ func PlaceOrder(order *Models.Order) (err error) {
 	uniqueValue := "Locked"
 	LockDuration := 6000
 	var id = strconv.FormatUint(uint64(productId), 10)
-	//messages := make(chan bool)
-	if isLocked, _ := Redis.Lock(id, uniqueValue, LockDuration); !isLocked {
-		time.Sleep(6000 * time.Millisecond)
-	}
-	defer Redis.Unlock(id, uniqueValue)
+	messages := make(chan int, 1)
+
+	Redis.Lock(id, uniqueValue, LockDuration, messages)
+	defer Redis.Unlock(id, uniqueValue, messages)
 
 	var product Models.Product
 	err1 := GetProductById(&product, id)
