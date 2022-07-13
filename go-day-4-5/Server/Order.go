@@ -1,25 +1,26 @@
-package Models
+package Server
 
 import (
 	"go-day-4-5/Config"
+	"go-day-4-5/Models"
 	"go-day-4-5/Redis"
 	"strconv"
 	"time"
 )
 
-func PlaceOrder(order *Order) (err error) {
+func PlaceOrder(order *Models.Order) (err error) {
 
 	var productId = order.ProductId
 	uniqueValue := "Locked"
 	LockDuration := 6000
 	var id = strconv.FormatUint(uint64(productId), 10)
-
+	//messages := make(chan bool)
 	if isLocked, _ := Redis.Lock(id, uniqueValue, LockDuration); !isLocked {
 		time.Sleep(6000 * time.Millisecond)
 	}
 	defer Redis.Unlock(id, uniqueValue)
 
-	var product Product
+	var product Models.Product
 	err1 := GetProductById(&product, id)
 
 	if err1 != nil {
@@ -42,14 +43,15 @@ func PlaceOrder(order *Order) (err error) {
 			}
 		}
 	}
-	time.Sleep(6000 * time.Millisecond)
+	//time.Sleep(6000 * time.Millisecond)
 	if err = Config.DB.Create(order).Error; err != nil {
 		return err
 	}
+
 	return nil
 }
 
-func GetOrderById(order *Order, id string) (err error) {
+func GetOrderById(order *Models.Order, id string) (err error) {
 
 	if err = Config.DB.Where("id = ?", id).First(order).Error; err != nil {
 		return err

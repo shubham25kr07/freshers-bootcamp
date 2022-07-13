@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go-day-4-5/Models"
+	"go-day-4-5/Server"
 	"net/http"
 	"strconv"
 	"time"
@@ -26,7 +27,7 @@ func PlaceOrder(c *gin.Context) {
 	customerId := order.CustomerId
 	var lastOrder Models.Order
 	cid := strconv.FormatUint(uint64(customerId), 10)
-	err1 := Models.GetLastOrderForCustomerId(&lastOrder, cid)
+	err1 := Server.GetLastOrderForCustomerId(&lastOrder, cid)
 
 	lastTime, _ := strconv.Atoi(strconv.FormatInt(lastOrder.CreatedAt.UTC().Unix(), 10))
 	presentTime, _ := strconv.Atoi(strconv.FormatInt(time.Now().UTC().Unix(), 10))
@@ -34,7 +35,7 @@ func PlaceOrder(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "transaction in cool down period of 5 min"})
 		return
 	}
-	err := Models.PlaceOrder(&order)
+	err := Server.PlaceOrder(&order)
 	orderResponse := ModifyResponse(&order)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -47,7 +48,7 @@ func PlaceOrder(c *gin.Context) {
 func GetOrderById(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var order Models.Order
-	err := Models.GetOrderById(&order, id)
+	err := Server.GetOrderById(&order, id)
 
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)

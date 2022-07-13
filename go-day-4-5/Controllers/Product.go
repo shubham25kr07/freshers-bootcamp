@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-day-4-5/Models"
 	"go-day-4-5/Redis"
+	"go-day-4-5/Server"
 	"net/http"
 	"time"
 )
@@ -20,7 +21,7 @@ func ModifyProductResponse(product *Models.Product) Models.ProductResponse {
 
 func GetProducts(c *gin.Context) {
 	var products []Models.Product
-	err := Models.GetAllProducts(&products)
+	err := Server.GetAllProducts(&products)
 
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
@@ -44,7 +45,7 @@ func AddProduct(c *gin.Context) {
 		return
 	}
 
-	err := Models.AddProduct(&product)
+	err := Server.AddProduct(&product)
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -58,7 +59,7 @@ func AddProduct(c *gin.Context) {
 func GetProductById(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var product Models.Product
-	err := Models.GetProductById(&product, id)
+	err := Server.GetProductById(&product, id)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
@@ -70,7 +71,7 @@ func GetProductById(c *gin.Context) {
 func UpdateProductDetail(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var product Models.Product
-	err := Models.GetProductById(&product, id)
+	err := Server.GetProductById(&product, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, product)
 	}
@@ -78,16 +79,18 @@ func UpdateProductDetail(c *gin.Context) {
 
 	uniqueValue := "Locked"
 	LockDuration := 6000
+	//messages := make(chan bool)
 	if isLocked, _ := Redis.Lock(id, uniqueValue, LockDuration); !isLocked {
 		time.Sleep(6000 * time.Millisecond)
 	}
 	defer Redis.Unlock(id, uniqueValue)
 
-	err = Models.UpdateProduct(&product)
+	err = Server.UpdateProduct(&product)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
 		productResponse := ModifyProductResponse(&product)
 		c.JSON(http.StatusOK, productResponse)
 	}
+	//messages <- true
 }

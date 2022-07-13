@@ -1,13 +1,14 @@
-package Models
+package Server
 
 import (
 	"errors"
 	"go-day-4-5/Config"
+	"go-day-4-5/Models"
 	"go-day-4-5/Utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func SaveUser(u *User) (err error) {
+func SaveUser(u *Models.User) (err error) {
 
 	err = Config.DB.Create(u).Error
 	if err != nil {
@@ -19,7 +20,7 @@ func VerifyPassword(password, hashedPassword string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	return err == nil
 }
-func LoginCheck(username, password string, user *User) (string, error) {
+func LoginCheck(username, password string, user *Models.User) (string, error) {
 
 	var err error
 	if err = Config.DB.Where("username = ?", username).First(user).Error; err != nil {

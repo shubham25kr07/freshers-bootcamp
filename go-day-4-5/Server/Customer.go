@@ -1,8 +1,11 @@
-package Models
+package Server
 
-import "go-day-4-5/Config"
+import (
+	"go-day-4-5/Config"
+	"go-day-4-5/Models"
+)
 
-func GetOrderByCustomerId(order *[]Order, customerId string) (err error) {
+func GetOrderByCustomerId(order *[]Models.Order, customerId string) (err error) {
 
 	if err = Config.DB.Where("customer_id = ?", customerId).Find(order).Error; err != nil {
 		return err
@@ -10,7 +13,7 @@ func GetOrderByCustomerId(order *[]Order, customerId string) (err error) {
 	return nil
 }
 
-func GetLastOrderForCustomerId(order *Order, customerId string) (err error) {
+func GetLastOrderForCustomerId(order *Models.Order, customerId string) (err error) {
 
 	if err = Config.DB.Where("customer_id = ?", customerId).Last(order).Error; err != nil {
 		return err
