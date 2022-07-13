@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -18,6 +19,9 @@ func main() {
 		fmt.Println("Status:", err)
 	}
 	defer Config.DB.Close()
+
+	flag.Parse()
+	Config.Pool = Config.NewPool(*Config.RedisServer)
 
 	orderModel := &Models.Order{}
 	productModel := &Models.Product{}

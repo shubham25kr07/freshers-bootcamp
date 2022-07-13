@@ -2,20 +2,20 @@ package Redis
 
 import (
 	"errors"
-	"flag"
 	"github.com/gomodule/redigo/redis"
 	"go-day-4-5/Config"
 )
 
-var (
-	pool        *redis.Pool
-	redisServer = flag.String("redisServer", ":6379", "")
-)
-
-func init() {
-	flag.Parse()
-	pool = Config.NewPool(*redisServer)
-}
+//
+//var (
+//	pool        *redis.Pool
+//	redisServer = flag.String("redisServer", ":6379", "")
+//)
+//
+//func init() {
+//	flag.Parse()
+//	pool = Config.NewPool(*redisServer)
+//}
 
 const (
 	lockScript = `
@@ -31,7 +31,7 @@ const (
 )
 
 func Lock(key, value string, timeoutMs int) (bool, error) {
-	r := pool.Get()
+	r := Config.Pool.Get()
 	defer r.Close()
 
 	cmd := redis.NewScript(1, lockScript)
@@ -43,7 +43,7 @@ func Lock(key, value string, timeoutMs int) (bool, error) {
 }
 
 func Unlock(key, value string) error {
-	r := pool.Get()
+	r := Config.Pool.Get()
 	defer r.Close()
 
 	cmd := redis.NewScript(1, unlockScript)

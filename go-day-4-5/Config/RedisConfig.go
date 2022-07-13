@@ -1,9 +1,14 @@
 package Config
 
 import (
+	"flag"
 	"github.com/gomodule/redigo/redis"
 	"time"
 )
+
+var Pool *redis.Pool
+
+var RedisServer = flag.String("redisServer", ":6379", "")
 
 func NewPool(addr string) *redis.Pool {
 	return &redis.Pool{
