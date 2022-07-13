@@ -22,7 +22,8 @@ func main() {
 	orderModel := &Models.Order{}
 	productModel := &Models.Product{}
 	customerModel := &Models.Customer{}
-	Config.DB.AutoMigrate(orderModel, productModel, customerModel)
+	userModel := &Models.User{}
+	Config.DB.AutoMigrate(orderModel, productModel, customerModel, userModel)
 
 	r := Routes.SetupRouter()
 	r.Run()
