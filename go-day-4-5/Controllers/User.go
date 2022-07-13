@@ -3,7 +3,7 @@ package Controllers
 import (
 	"github.com/gin-gonic/gin"
 	"go-day-4-5/Models"
-	"go-day-4-5/Server"
+	"go-day-4-5/Service"
 	"net/http"
 )
 
@@ -19,7 +19,7 @@ func Register(c *gin.Context) {
 	user := Models.User{}
 	user.Username = input.Username
 	user.Password = input.Password
-	err := Server.SaveUser(&user)
+	err := Service.SaveUser(&user)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -42,7 +42,7 @@ func Login(c *gin.Context) {
 	username := input.Username
 	password := input.Password
 
-	token, err := Server.LoginCheck(username, password, &user)
+	token, err := Service.LoginCheck(username, password, &user)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "username or password is incorrect."})

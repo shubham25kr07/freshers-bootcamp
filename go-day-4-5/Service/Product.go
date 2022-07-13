@@ -1,4 +1,4 @@
-package Server
+package Service
 
 import (
 	"go-day-4-5/Config"

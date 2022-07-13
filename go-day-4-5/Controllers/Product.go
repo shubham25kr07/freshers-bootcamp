@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-day-4-5/Models"
 	"go-day-4-5/Redis"
-	"go-day-4-5/Server"
+	"go-day-4-5/Service"
 	"net/http"
 	"time"
 )
@@ -21,7 +21,7 @@ func ModifyProductResponse(product *Models.Product) Models.ProductResponse {
 
 func GetProducts(c *gin.Context) {
 	var products []Models.Product
-	err := Server.GetAllProducts(&products)
+	err := Service.GetAllProducts(&products)
 
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
@@ -45,7 +45,7 @@ func AddProduct(c *gin.Context) {
 		return
 	}
 
-	err := Server.AddProduct(&product)
+	err := Service.AddProduct(&product)
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -59,7 +59,7 @@ func AddProduct(c *gin.Context) {
 func GetProductById(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var product Models.Product
-	err := Server.GetProductById(&product, id)
+	err := Service.GetProductById(&product, id)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
@@ -71,7 +71,7 @@ func GetProductById(c *gin.Context) {
 func UpdateProductDetail(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var product Models.Product
-	err := Server.GetProductById(&product, id)
+	err := Service.GetProductById(&product, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, product)
 	}
@@ -85,7 +85,7 @@ func UpdateProductDetail(c *gin.Context) {
 	}
 	defer Redis.Unlock(id, uniqueValue)
 
-	err = Server.UpdateProduct(&product)
+	err = Service.UpdateProduct(&product)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
