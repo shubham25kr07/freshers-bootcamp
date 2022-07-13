@@ -1,6 +1,8 @@
 package Models
 
-import "go-day-4-5/Config"
+import (
+	"go-day-4-5/Config"
+)
 
 func GetAllProducts(products *[]Product) (err error) {
 	if err = Config.DB.Find(products).Error; err != nil {

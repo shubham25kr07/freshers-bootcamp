@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go-day-4-5/Models"
+	"go-day-4-5/Redis"
 	"net/http"
+	"time"
 )
 
 func ModifyProductResponse(product *Models.Product) Models.ProductResponse {
@@ -73,6 +75,14 @@ func UpdateProductDetail(c *gin.Context) {
 		c.JSON(http.StatusNotFound, product)
 	}
 	c.BindJSON(&product)
+
+	uniqueValue := "Locked"
+	LockDuration := 6000
+	if isLocked, _ := Redis.Lock(id, uniqueValue, LockDuration); !isLocked {
+		time.Sleep(6000 * time.Millisecond)
+	}
+	defer Redis.Unlock(id, uniqueValue)
+
 	err = Models.UpdateProduct(&product)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
